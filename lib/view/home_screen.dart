@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
+import '../auth/login_screen.dart';
 import '../controller/data_controller.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,6 +30,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cost Centers List'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            onPressed: () {
+              // Navigate to the login screen and remove this screen from the stack
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: _costCentersStream,
@@ -45,21 +59,22 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-  return ListView.builder(
+          return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               DocumentSnapshot<Map<String, dynamic>> doc =
                   snapshot.data!.docs[index];
-                  
+
               Map<String, dynamic> data = doc.data()!;
               return InkWell(
                 onTap: () {
-                   Navigator.push(
-          context,
-          MaterialPageRoute(
-           builder: (context) => UnitCostsPage(costCenterId: doc.id),
-          ),
-        );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UnitCostsPage(costCenterId: doc.id),
+                    ),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.all(8.0),

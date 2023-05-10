@@ -4,6 +4,8 @@ import 'package:asset_app/view/create_unit_cost.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'asset_screen.dart';
+
 class UnitCostsPage extends StatefulWidget {
   final String costCenterId;
 
@@ -105,9 +107,17 @@ class _UnitCostsPageState extends State<UnitCostsPage> {
 
                   return Card(
                     child: GestureDetector(
-                      onTap: () {
-                        // Handle onTap event here
-                      },
+onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => AssetScreenPage(
+        costCenterId: data['cost_center_id'],
+        unitCostId: doc.id,
+      ),
+    ),
+  );
+},
                       child: ListTile(
                         leading: data['imageUrl'] != null
                             ? Image.file(File(data['imageUrl']))
