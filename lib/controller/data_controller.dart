@@ -1,5 +1,8 @@
   import 'dart:io';
 
+import 'package:asset_app/nav/bottom_nav.dart';
+import 'package:asset_app/view/home_screen.dart';
+import 'package:asset_app/view/unit_cost.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,6 +15,7 @@ class DataController extends GetxController{
 
   DocumentSnapshot?  myDocument;
   var isCostCenterInfoLoading = false.obs;
+  var isUnitCostSave = false.obs;
 
 getmyDocument() async{
   FirebaseFirestore.instance.collection('users').doc(auth.currentUser!.uid).snapshots().listen((event) {
@@ -19,7 +23,7 @@ getmyDocument() async{
   });
 
 }
-Future<String> uploadImageToFirebase(File file) async{
+Future<String> uploadImageToFirebaseStorage(File file) async{
   String fileUrl = " ";
  String fileName = Path.basename(file.path);
 
@@ -33,17 +37,37 @@ Future<String> uploadImageToFirebase(File file) async{
  return fileUrl;
 } 
 
-Future<bool>uploadCostCenterData(Map<String,dynamic>eventData) async{
+uploadCostCenterData(String imageUrl, String costName, String location,String description) async{
   String uid = FirebaseAuth.instance.currentUser!.uid;
-  bool isCompleted = false;
- await FirebaseFirestore.instance.collection('cost_centers').add(eventData).then((value) {
-  isCompleted =true;
-  Get.snackbar('Cost Center', 'uploaded successful', colorText: Colors.white,
-  backgroundColor: Colors.blue);
- }).catchError((e){
-  isCompleted = false;
- });
- return isCompleted = false;
+ await FirebaseFirestore.instance.collection('cost_centers').doc().set({
+    'imageUrl': imageUrl,
+    'costName': costName,
+    'location': location,
+    'description': description,
+    'createdBy': uid
+  }).then((value) {
+     Get.snackbar('cost center','created succsessful',colorText: Colors.white,
+     backgroundColor: Colors.blue);
+    isCostCenterInfoLoading(false);
+     Get.offAll( const HomeScreen());
+  });
 }
+
+// uploadUnitCostData(String imageUrl, String unitName, String location,String description) async{
+// String uid = FirebaseAuth.instance.currentUser!.uid;
+//  await FirebaseFirestore.instance.collection('unit cost').doc().set({
+//     'imageUrl': imageUrl,
+//     'unitName': unitName,
+//     'location': location,
+//     'description': description,
+//     'cost_center_id': widget.costCenterId,
+//     'createdBy': uid
+//   }).then((value) {
+//      Get.snackbar('unit cost ','created succsessful',colorText: Colors.white,
+//      backgroundColor: Colors.blue);
+//     isUnitCostSave(false);
+//      Get.offAll(  const UnitCostsPage());
+//   });
+// }
   
 }
